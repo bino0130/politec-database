@@ -27,6 +27,7 @@ call insert_tupyo2(1000);
 select * from tupyo2;
 select count(*) from tupyo2;
 
+-- 호감도 투표 3
 select age, 
 	h1.name as 투표1, 
 	h2.name as 투표2, 
@@ -34,13 +35,14 @@ select age,
 	from tupyo2 as a, hubo as h1, hubo as h2, hubo as h3
     where a.kiho1 = h1.kiho and a.kiho2 = h2.kiho and a.kiho3 = h3.kiho;
     
+-- 호감도 투표 4
 select age as 연령대,
 	(select name from hubo where a.kiho1 = kiho) as 투표1,
     (select name from hubo where a.kiho2 = kiho) as 투표2,
     (select name from hubo where kiho = a.kiho3) as 투표3
     from tupyo2 as a;
     
--- 호감도 투표 3
+-- 호감도 투표 5,6
 select
 (select count(*) from tupyo2 where kiho1=1 or kiho2=1 or kiho3=1) as '나연',
 (select count(*) from tupyo2 where kiho1=2 or kiho2=2 or kiho3=2) as '정연',
@@ -54,37 +56,3 @@ select
 (select 나연 + 정연 + 모모 + 사나 + 지효 + 미나 + 다현 + 채영 + 쯔위) as '총합',
 (select count(*) from tupyo2 where kiho1=kiho2 or kiho1=kiho3 or kiho2=kiho3) as '2중복',
 (select count(*) from tupyo2 where kiho1=kiho2 and kiho1=kiho3 and kiho2=kiho3) as '3중복';
-
--- 호감도 투표 4
-drop table if exists examtable;
-create table examtable(
-	name varchar(20),
-    id int not null primary key,
-    kor int, eng int, mat int);
-desc examtable;
-
-drop procedure if exists insert_examtable;
-delimiter $$
-create procedure insert_examtable(_last integer)
-begin
-declare _name varchar(20);
-declare _id integer;
-declare _cnt integer;
-set _cnt=0;
-delete from examtable where id > 0;
-	_loop : loop
-		set _cnt = _cnt + 1;
-        set _name = concat("홍길", cast(_cnt as char(4)));
-        set _id = 209900 + _cnt;
-        
-        insert into examtable value (_name, _id, rand()*100, rand()*100, rand()*100);
-        
-        if _cnt = _last then
-			leave _loop;
-		end if;
-	end loop _loop;
-end $$
-delimiter ;
-
-call insert_examtable(1000);
-select * from examtable;
