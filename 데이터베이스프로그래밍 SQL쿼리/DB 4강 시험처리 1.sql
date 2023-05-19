@@ -60,3 +60,47 @@ insert into examtableEX
     from examtable as b;
     
 select * from examtableEX order by ranking desc;
+
+-- 정답테이블 생성
+drop table if exists answer;
+create table answer (
+subjectID int not null primary key,
+a01 int, a02 int, a03 int, a04 int, a05 int, a06 int, a07 int, a08 int, a09 int, a10 int,
+a11 int, a12 int, a13 int, a14 int, a15 int, a16 int, a17 int, a18 int, a19 int, a20 int
+);
+
+-- 시험테이블 생성
+drop table if exists testing;
+create table testing (
+subjectID int not null,
+stu_name varchar(20),
+stu_id int not null,
+a01 int, a02 int, a03 int, a04 int, a05 int, a06 int, a07 int, a08 int, a09 int, a10 int,
+a11 int, a12 int, a13 int, a14 int, a15 int, a16 int, a17 int, a18 int, a19 int, a20 int,
+primary key(subjectID, stu_id)
+);
+
+-- 채점테이블 생성
+drop table if exists scoring;
+create table scoring(
+subjectID int not null,
+stu_name varchar(20),
+stu_id int not null,
+a01 int, a02 int, a03 int, a04 int, a05 int, a06 int, a07 int, a08 int, a09 int, a10 int,
+a11 int, a12 int, a13 int, a14 int, a15 int, a16 int, a17 int, a18 int, a19 int, a20 int,
+score int,
+primary key(subjectID, stu_id)
+);
+
+-- 채점리포트테이블 생성
+drop table if exists report;
+create table report(
+stu_name varchar(20),
+stu_id int not null primary key,
+kor int, eng int, mat int
+);
+
+desc answer; -- 정답지
+desc testing; -- 학생 시험지
+desc scoring; -- 채점 결과
+desc report; -- 한 반의 시험결과
