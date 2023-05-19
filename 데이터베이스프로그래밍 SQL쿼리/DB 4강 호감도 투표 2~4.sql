@@ -88,17 +88,3 @@ delimiter ;
 
 call insert_examtable(1000);
 select * from examtable;
-
-drop view if exists examview;
-create view examview(name,id,kor,eng,mat,sum,avg,ran)
-as select *,
-	b.kor + b.eng + b.mat,
-    (b.kor + b.eng + b.mat) / 3, #평균
-    (select count(*) + 1 from examtable as a 
-		where (a.kor + a. eng + a.mat) > (b.kor + b.eng + b.mat) ) #등수
-	from examtable as b;
-    
-select * from examview;
-select name, ran from examview;
-select * from examview where ran > 5;
-insert into examview values ('test', 1,1,1,1,1,1,1); # view에는 데이터를 insert 할 수 없음
