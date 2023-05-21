@@ -21,13 +21,16 @@ delete from scoring where subjectID < 4;
 
 -- 채점결과 테이블 insert (stu_name, stu_id(PK), kor, eng, mat)
 delete from report where stu_id > 0;
-INSERT INTO report (stu_id) # report 테이블에 stu_id(학번) 먼저 입력
-SELECT DISTINCT stu_id
-FROM scoring;
+INSERT INTO report (stu_name, stu_id, kor, eng, mat) 
+SELECT distinct s.stu_name, s.stu_id, s1.score * 5, s2.score * 5, s3.score * 5
+FROM scoring as s, scoring as s1, scoring as s2, scoring as s3
+WHERE s.stu_id = s1.stu_id and s.stu_id = s2.stu_id and s.stu_id = s3.stu_id and 
+s1.subjectID = 1 and s2.subjectID = 2 and s3.subjectID = 3;
 select * from report;
 
-INSERT INTO report (stu_name, kor, eng, mat) # 
-SELECT s1.stu_name, s1.score * 5, s2.score * 5, s3.score * 5
-FROM scoring as s, scoring as s1, scoring as s2, scoring as s3, report as r
-WHERE s.stu_id = r.stu_id and (s1.subjectID = 1 or s2.subjectID = 2 or s3.subjectID = 3);
-select count(*) from report;
+-- 합계, 평균, 등수 추가로 출력
+select stu_name, stu_id, kor, eng, mat, kor + eng + mat as sum , (kor + eng + mat) / 3 as avg , 
+(select count(*) + 1 from report as r1 where r1.kor+r1.eng+r1.mat > r.kor + r.eng + r.mat) as rnk 
+from report as r order by rnk;
+
+-- 각 과목별 / 문제별 득점자 수, 득점률
