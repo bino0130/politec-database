@@ -1,10 +1,10 @@
-use mysql;
+drop table if exists reservation;
 create table reservation( # reservation 테이블 생성
-name varchar(5), reserve_date date,
-room int, addr varchar(5),
-tel varchar(20), ipgum_name varchar(5),
-memo varchar(20), input_date date);
-desc reservation;
+name varchar(5), reserve_date date, # varchar(5) name, date reserve_date
+room int, addr varchar(5), # int room, varchar(5) addr
+tel varchar(20), ipgum_name varchar(5), # varchar(20) tel, varchar(5) ipgum_name
+memo varchar(20), input_date date); # varchar(20) memo, date input_date
+desc reservation; # reservation 구조 출력
 
 # reservation 데이터 입력
 delete from reservation;
@@ -28,46 +28,27 @@ insert into reservation values ("오스카","2023-06-08",1,"서현","010-6215-11
 insert into reservation values ("김덕배","2023-06-09",2,"정자","010-6215-2256","김덕배","잘지내요",now());
 insert into reservation values ("실바","2023-06-10",1,"판교","010-3278-9526","실바","잘지내요",now());
 insert into reservation values ("제임스","2023-06-11",2,"수내","010-4468-0306","제임스","잘지내요",now());
-select * from reservation;
+select * from reservation; # reservation 전체 데이터 출력
 
 # 한달 간 예약상황 보여주는 procedure 생성
-drop procedure if exists reservstat_calc;
+drop procedure if exists reservstat_calc; # 있으면 지워라
 delimiter //
-create procedure reservstat_calc()
-begin
-	declare _date date;
-    declare _cnt integer;
-    declare _room1 varchar(20);
-    declare _room2 varchar(20);
-    declare _room3 varchar(20);
-    
-    set _date = now();
-    set _cnt = 0;
-    drop table if exists reserv_stat;
-    create table reserv_stat(
-		reserve_date date not null primary key,
-        room1 varchar(20),
-        room2 varchar(20),
-        room3 varchar(20));
-_loop : loop
-	set _cnt = _cnt + 1;
-	insert into reserv_stat
-    select 
-    r1.reserve_date, 
-    if(r1.room = 1, r1.name, if(r2.room = 2, r2.name, if(r3.room = 3, r3.name, "예약가능"))),
-    if(r1.room = 1, r1.name, if(r2.room = 2, r2.name, if(r3.room = 3, r3.name, "예약가능"))),
-    if(r1.room = 1, r1.name, if(r2.room = 2, r2.name, if(r3.room = 3, r3.name, "예약가능")))
-    from reservation as r1, reservation as r2, reservation as r3;
-    
-    select * from reserv_stat;
-end//
+create procedure reservstat_calc() # reservstat_calc 프로시저 생성
+begin # 시작 
+    drop table if exists reserv_stat; # reserv_stat 테이블 있으면 지워라
+    create table reserv_stat( # reserv_stat 테이블 생성
+		reserve_date date not null primary key, # date, not null, pk reserve_date
+        room1 varchar(20), # varchar(20) room1
+        room2 varchar(20), # varchar(20) room2
+        room3 varchar(20)); # varchar(20) room3
+
+    insert into reserv_stat # insert 안에 select 문 사용해서 데이터 입력
+	select r.reserve_date,
+       if(r.room = 1, r.name, "예약가능") as room1_name, # r.room이 1이면 이름적고 아니면 예약가능
+       if(r.room = 2, r.name, "예약가능") as room2_name, # r.room이 2면 이름적고 아니면 예약가능
+       if(r.room = 3, r.name, "예약가능") as room3_name # r.room이 3이면 이름적고 아니면 예약가능
+	from reservation as r;
+	select * from reserv_stat; # reserv_stat 전체 데이터 출력
+end// # delimiter 종료
 delimiter ;
-call reservstat_calc();
-select * from reserv_stat;
-insert into reserv_stat
-    select 
-    r1.reserve_date, 
-    if(r1.room = 1, r1.name, if(r2.room = 2, r2.name, if(r3.room = 3, r3.name, "예약가능"))),
-    if(r1.room = 1, r1.name, if(r2.room = 2, r2.name, if(r3.room = 3, r3.name, "예약가능"))),
-    if(r1.room = 1, r1.name, if(r2.room = 2, r2.name, if(r3.room = 3, r3.name, "예약가능")))
-    from reservation as r1, reservation as r2, reservation as r3;
+call reservstat_calc(); # reservstat_calc 호출
