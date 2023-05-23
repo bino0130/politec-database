@@ -8,7 +8,7 @@ create table th_grade(
     eng int,
     mat int,
     sum int,
-    avg float);
+    avg double);
 
 -- 테이블에 값 insert
 drop procedure if exists tr1;
@@ -68,26 +68,46 @@ else
 end //
 delimiter ;
 
-call print_report(5, 25);
+call print_report(4, 25);
 
--- print_now() procedure 생성
-
-
-drop procedure if exists print_now();
+-- print_now() procedure 현재 테이블 생성
+create table now_table(
+	sumkor int,
+	sumeng int,
+	summat int,
+	sumsum int,
+	sumavg double,
+	avgkor double,
+	avgeng double,
+	avgmat double,
+	avgsum double,
+	avgavg double);
+drop procedure if exists print_now;
 delimiter //
 create procedure print_now(_nwpage integer, _to integer)
 begin
 declare _bfpage integer;
+delete from now_table;
+set _bfpage = 0;
 
-declare _sumkor integer;
-declare _sumeng integer;
-declare _summat integer;
-declare _sumsum integer;
-declare _sumavg integer;
-
-declare _avgkor integer;
-declare _avgeng integer;
-declare _avgmat integer;
-declare _avgsum integer;
-declare _avgavg integer;
-
+select * from now_table;
+end//
+delimiter ;
+call print_now(5,25);
+select count(*) now_table;
+select * from now_table;
+delete from now_table;
+select
+	sum(t.kor), sum(t.eng), sum(t.mat), sum(t.sum), sum(t.avg),
+	avg(t.kor), avg(t.eng), avg(t.mat), avg(t.sum), avg(t.avg)
+	from th_grade as t;
+    
+select sum(kor) over() from th_grade limit 75,25;
+SELECT
+    SUM(kor) AS total_sum,
+    AVG(kor) AS total_avg
+FROM (
+    SELECT 
+    FROM th_grade as t
+) AS subquery
+WHERE t BETWEEN 75 AND 100;
