@@ -58,13 +58,14 @@ delimiter //
 create procedure print_report(_nwpage integer, _to integer) # print_report 프로시저 생성
 begin # delimiter 
 declare _bfpage integer; # integer 변수 _bfpage 생성
+declare _lastpage integer; # integer 변수 _lastpage 생성
 # _bfpage를 생성한 이유 : limit x, y는 x+1번째 데이터값부터 y번째 데이터까지 범위를 지정한다.
 # 그래서 parameter _nwpage를 받아 x값을 계산해서 도출해내기 위해 생성함
-
-if _nwpage < 1 then # _nwpage가 1보다 작으면
+set _lastpage = (select count(*) from th_grade) / _to; # lastpage = 전체 개수 / 출력 데이터 개수
+if _nwpage < 1 then # _nwpage가 첫 페이지보다 작으면
     select * from th_grade limit 0, _to; # 0부터 _to번째 데이터까지 출력
-elseif _nwpage > 40 then # _nwpage가 40보다 크다면
-	set _bfpage = 39 * _to; # _bfpage는 39 * _to
+elseif _nwpage > _lastpage then # _nwpage가 마지막 페이지보다 크다면
+	set _bfpage = (_lastpage - 1) * _to; # _bfpage는 39 * _to
 	select * from th_grade limit _bfpage, _to; # _bfpage(39)+1부터 _to번째 데이터까지 출력
 else
 	set _bfpage = (_nwpage -1) * _to; # _bfpage = (_nwpage-1) X _to
@@ -208,3 +209,5 @@ end // # delimiter 종료
 delimiter ;
 
 call print_tot(5, 25); # n번째 페이지의 누적 테이블 출력
+
+select * from (select * from th_grade limit 20, 5) as a;
