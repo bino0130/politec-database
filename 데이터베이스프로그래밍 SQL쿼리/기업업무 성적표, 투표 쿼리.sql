@@ -1,32 +1,26 @@
 use kopo10;
+create table kiho(id int not null primary key, name varchar(10));
+desc kiho;
+select * from kiho;
 insert into kiho value (1, '김일돌');
 insert into kiho value (2, '김이돌');
 insert into kiho value (3, '김삼돌');
 insert into kiho value (4, '김사돌');
 select * from kiho;
-desc kiho;
-show tables;
 
-drop table if exists voteTable; # 있으면 지워라
-create table voteTable( # voteTable 생성
-id int, # int id
-age int);  # int age
-
-select * from voteTable;
-show tables;
-
-drop table if exists tupyo;
+drop table if exists tupyo; # 투표 테이블이 있다면 지워라
 create table tupyo( # 투표 테이블 생성
 	id int, # int kiho
 	age int, # int age
     foreign key(id) references kiho(id) # hubo테이블의 kiho와 연동되는 foreign key kiho
 	on delete cascade);
-select * from tupyo;
+desc tupyo; # 투표 테이블 구조 출력
+
     
-    SELECT a.id, a.name, (SELECT COUNT(b.id) FROM tupyo AS b WHERE a.id = b.id) AS 득표수,
-    (SELECT ROUND((COUNT(b.id) / (SELECT COUNT(id) FROM tupyo) * 100), 2) 
-    FROM tupyo AS b WHERE a.id = b.id) AS 득표율
-    FROM kiho AS a;
+SELECT a.id, a.name, (SELECT COUNT(b.id) FROM tupyo AS b WHERE a.id = b.id) AS 득표수,
+(SELECT ROUND((COUNT(b.id) / (SELECT COUNT(id) FROM tupyo) * 100), 2) 
+FROM tupyo AS b WHERE a.id = b.id) AS 득표율
+FROM kiho AS a;
     
 SELECT id, age, COUNT(id) AS 득표수
 FROM tupyo
